@@ -51,10 +51,10 @@
       const body = document.body;
       
       // 如果用户之前有偏好设置，则应用
-      if (savedTheme === 'light') {
-        body.classList.remove('dark-mode');
-      } else {
+      if (savedTheme === 'dark') {
         body.classList.add('dark-mode');
+      } else {
+        body.classList.remove('dark-mode');
       }
       
       // 初始化卡片动画
